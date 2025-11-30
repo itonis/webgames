@@ -6,6 +6,7 @@
     --cell-covered-end: #c9e3f7;
     --cell-hover: #fffff0;
     --cell-revealed: #f5f5f5;
+    --cell-border: #a9cce3;
     --border-light: #ffffff;
     --border-dark: #8bb1d6;
     --text-color: #333;
@@ -13,7 +14,7 @@
     /* Requested Base Color */
     --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     --cell-size: 24px;
-
+    
     /* Number Colors - Classic Win7 */
     --color-1: #0000ff;
     --color-2: #008000;
@@ -29,19 +30,20 @@
     /* Dark Premium Theme */
     --bg-color: #121212;
     --game-bg: rgba(255, 255, 255, 0.1);
-    --cell-covered-start: rgba(255, 255, 255, 0.05);
+    --cell-covered-start: rgba(255, 255, 255, 0.08);
     --cell-covered-end: rgba(255, 255, 255, 0.05);
     --cell-hover: rgba(255, 255, 255, 0.15);
     --cell-revealed: rgba(255, 255, 255, 0.2);
+    --cell-border: #212229;
     --border-light: rgba(255, 255, 255, 0.1);
     --border-dark: rgba(0, 0, 0, 0.5);
     --text-color: #e0e0e0;
     --accent-color: #00d4ff;
 
     /* Neon Number Colors */
-    --color-1: #4d94ff;
-    --color-2: #4dff88;
-    --color-3: #ff4d4d;
+    --color-1: #4090f0;
+    --color-2: #33e788;
+    --color-3: #f04040;
     --color-4: #b366ff;
     --color-5: #ff9933;
     --color-6: #33ffff;
@@ -53,13 +55,13 @@ body {
     color: var(--text-color);
     font-family: var(--font-family);
     display: flex;
+    padding: 60px;
     justify-content: center;
-    align-items: center;
+    align-items: start;
     min-height: 100vh;
     margin: 0;
     user-select: none;
     overflow: hidden;
-    transition: background 0.3s;
 }
 
 /* Light Mode Gradient Override */
@@ -69,7 +71,7 @@ body:not([data-theme="dark"]) {
 
 /* Dark Mode Gradient Override */
 body[data-theme="dark"] {
-    background-image: radial-gradient(circle at 50% 50%, #1e1e2e 0%, #000000 100%);
+    background: linear-gradient(135deg, #1e1e2e 0%, #000000 100%);
 }
 
 .game-container {
@@ -85,12 +87,6 @@ body[data-theme="dark"] {
     align-items: center;
 }
 
-[data-theme="dark"] .game-container {
-    backdrop-filter: blur(10px);
-    border: 1px solid var(--border-light);
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
-}
-
 .game-header {
     display: flex;
     justify-content: space-between;
@@ -100,13 +96,6 @@ body[data-theme="dark"] {
     background: transparent;
     padding: 0 5px;
     box-sizing: border-box;
-}
-
-[data-theme="dark"] .game-header {
-    background: rgba(0, 0, 0, 0.2);
-    padding: 10px 20px;
-    border-radius: 12px;
-    border: 1px solid var(--border-light);
 }
 
 .counter-box {
@@ -125,15 +114,6 @@ body[data-theme="dark"] {
     box-shadow: inset 0 2px 2px rgba(0, 0, 0, 0.3);
 }
 
-[data-theme="dark"] .counter-box {
-    background: rgba(0, 0, 0, 0.4);
-    color: var(--accent-color);
-    border: none;
-    border-radius: 6px;
-    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.5);
-    text-shadow: 0 0 5px var(--accent-color);
-}
-
 .reset-btn {
     width: 40px;
     height: 40px;
@@ -150,32 +130,23 @@ body[data-theme="dark"] {
 }
 
 [data-theme="dark"] .reset-btn {
-    width: 44px;
-    height: 44px;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid var(--border-light);
-    border-radius: 50%;
-    box-shadow: none;
+    background: linear-gradient(to bottom, #000000, #1c0e03);
 }
 
 .reset-btn:hover {
     background: linear-gradient(to bottom, #fffff0, #e3f1fc);
     border-color: var(--accent-color);
     box-shadow: 0 0 3px var(--accent-color);
+    transform: scale(1.05);
 }
 
 [data-theme="dark"] .reset-btn:hover {
-    background: rgba(255, 255, 255, 0.2);
-    transform: scale(1.05);
+    background: linear-gradient(to bottom, #00000f, #1c0e03);
 }
 
 .reset-btn:active {
     background: #cce6ff;
     transform: translateY(1px);
-}
-
-[data-theme="dark"] .reset-btn:active {
-    transform: scale(0.95);
 }
 
 .game-board {
@@ -188,10 +159,7 @@ body[data-theme="dark"] {
 }
 
 [data-theme="dark"] .game-board {
-    gap: 1px;
     background: rgba(0, 0, 0, 0.3);
-    padding: 1px;
-    border-radius: 4px;
     border: 1px solid var(--border-light);
 }
 
@@ -199,21 +167,14 @@ body[data-theme="dark"] {
     width: var(--cell-size);
     height: var(--cell-size);
     background: linear-gradient(to bottom, var(--cell-covered-start), var(--cell-covered-end));
-    border: 1px solid #a9cce3;
+    border: 1px solid var(--cell-border);
     display: flex;
     justify-content: center;
     align-items: center;
     font-weight: bold;
     font-size: 16px;
-    cursor: default;
-    box-sizing: border-box;
-}
-
-[data-theme="dark"] .cell {
-    background: var(--cell-covered-start);
-    border: none;
     cursor: pointer;
-    border-radius: 2px;
+    box-sizing: border-box;
 }
 
 /* Hover effect for covered cells */
@@ -223,8 +184,7 @@ body[data-theme="dark"] {
 }
 
 [data-theme="dark"] .cell.covered:hover {
-    background: var(--cell-hover);
-    z-index: 1;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.15));
 }
 
 /* Active (pressed) state for covered cells */
@@ -236,9 +196,7 @@ body[data-theme="dark"] {
 
 [data-theme="dark"] .cell.covered.active {
     background: rgba(0, 0, 0, 0.2);
-    transform: scale(0.95);
-    border: none;
-    box-shadow: none;
+    border: 1px solid #294561;
 }
 
 .cell.revealed {
@@ -248,8 +206,7 @@ body[data-theme="dark"] {
 }
 
 [data-theme="dark"] .cell.revealed {
-    background: var(--cell-revealed);
-    border: none;
+    border: 1px solid #333333;
     box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
@@ -265,10 +222,6 @@ body[data-theme="dark"] {
 
 .cell.flagged {
     color: red;
-}
-
-[data-theme="dark"] .cell.flagged {
-    filter: drop-shadow(0 0 2px red);
 }
 
 /* Number Colors */
@@ -304,18 +257,6 @@ body[data-theme="dark"] {
     color: var(--color-8);
 }
 
-[data-theme="dark"] .cell[data-value="1"] {
-    text-shadow: 0 0 5px rgba(77, 148, 255, 0.5);
-}
-
-[data-theme="dark"] .cell[data-value="2"] {
-    text-shadow: 0 0 5px rgba(77, 255, 136, 0.5);
-}
-
-[data-theme="dark"] .cell[data-value="3"] {
-    text-shadow: 0 0 5px rgba(255, 77, 77, 0.5);
-}
-
 .controls {
     margin-top: 15px;
     display: flex;
@@ -324,13 +265,6 @@ body[data-theme="dark"] {
     gap: 15px;
     color: var(--text-color);
     font-size: 14px;
-}
-
-[data-theme="dark"] .controls {
-    background: rgba(0, 0, 0, 0.2);
-    padding: 8px 16px;
-    border-radius: 20px;
-    border: 1px solid var(--border-light);
 }
 
 .theme-btn {
