@@ -1,0 +1,377 @@
+:root {
+    /* Default Light Theme (Win7 Aero Blue) */
+    --bg-color: #eef3fa;
+    --game-bg: #cce6ff;
+    --cell-covered-start: #f2f9fc;
+    --cell-covered-end: #c9e3f7;
+    --cell-hover: #fffff0;
+    --cell-revealed: #f5f5f5;
+    --border-light: #ffffff;
+    --border-dark: #8bb1d6;
+    --text-color: #333;
+    --accent-color: #5599ff;
+    /* Requested Base Color */
+    --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    --cell-size: 24px;
+
+    /* Number Colors - Classic Win7 */
+    --color-1: #0000ff;
+    --color-2: #008000;
+    --color-3: #ff0000;
+    --color-4: #000080;
+    --color-5: #800000;
+    --color-6: #008080;
+    --color-7: #000000;
+    --color-8: #808080;
+}
+
+[data-theme="dark"] {
+    /* Dark Premium Theme */
+    --bg-color: #121212;
+    --game-bg: rgba(255, 255, 255, 0.1);
+    --cell-covered-start: rgba(255, 255, 255, 0.05);
+    --cell-covered-end: rgba(255, 255, 255, 0.05);
+    --cell-hover: rgba(255, 255, 255, 0.15);
+    --cell-revealed: rgba(255, 255, 255, 0.2);
+    --border-light: rgba(255, 255, 255, 0.1);
+    --border-dark: rgba(0, 0, 0, 0.5);
+    --text-color: #e0e0e0;
+    --accent-color: #00d4ff;
+
+    /* Neon Number Colors */
+    --color-1: #4d94ff;
+    --color-2: #4dff88;
+    --color-3: #ff4d4d;
+    --color-4: #b366ff;
+    --color-5: #ff9933;
+    --color-6: #33ffff;
+    --color-7: #ffffff;
+}
+
+body {
+    background: var(--bg-color);
+    color: var(--text-color);
+    font-family: var(--font-family);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    user-select: none;
+    overflow: hidden;
+    transition: background 0.3s;
+}
+
+/* Light Mode Gradient Override */
+body:not([data-theme="dark"]) {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+/* Dark Mode Gradient Override */
+body[data-theme="dark"] {
+    background-image: radial-gradient(circle at 50% 50%, #1e1e2e 0%, #000000 100%);
+}
+
+.game-container {
+    background: var(--game-bg);
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border-dark);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    transform-origin: top center;
+    transition: transform 0.2s ease, background 0.3s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+[data-theme="dark"] .game-container {
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--border-light);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+}
+
+.game-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 10px;
+    background: transparent;
+    padding: 0 5px;
+    box-sizing: border-box;
+}
+
+[data-theme="dark"] .game-header {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 10px 20px;
+    border-radius: 12px;
+    border: 1px solid var(--border-light);
+}
+
+.counter-box {
+    background: #000;
+    color: #ff0000;
+    /* Classic Red LED */
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 26px;
+    font-weight: bold;
+    padding: 2px 6px;
+    border: 1px solid var(--border-dark);
+    border-radius: 2px;
+    min-width: 50px;
+    text-align: center;
+    letter-spacing: 1px;
+    box-shadow: inset 0 2px 2px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .counter-box {
+    background: rgba(0, 0, 0, 0.4);
+    color: var(--accent-color);
+    border: none;
+    border-radius: 6px;
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.5);
+    text-shadow: 0 0 5px var(--accent-color);
+}
+
+.reset-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 24px;
+    background: linear-gradient(to bottom, #ffffff, #e3f1fc);
+    border: 1px solid var(--border-dark);
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    transition: all 0.1s;
+}
+
+[data-theme="dark"] .reset-btn {
+    width: 44px;
+    height: 44px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--border-light);
+    border-radius: 50%;
+    box-shadow: none;
+}
+
+.reset-btn:hover {
+    background: linear-gradient(to bottom, #fffff0, #e3f1fc);
+    border-color: var(--accent-color);
+    box-shadow: 0 0 3px var(--accent-color);
+}
+
+[data-theme="dark"] .reset-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.05);
+}
+
+.reset-btn:active {
+    background: #cce6ff;
+    transform: translateY(1px);
+}
+
+[data-theme="dark"] .reset-btn:active {
+    transform: scale(0.95);
+}
+
+.game-board {
+    display: grid;
+    grid-template-columns: repeat(30, var(--cell-size));
+    grid-template-rows: repeat(16, var(--cell-size));
+    gap: 0;
+    border: 1px solid var(--border-dark);
+    background: #fff;
+}
+
+[data-theme="dark"] .game-board {
+    gap: 1px;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 1px;
+    border-radius: 4px;
+    border: 1px solid var(--border-light);
+}
+
+.cell {
+    width: var(--cell-size);
+    height: var(--cell-size);
+    background: linear-gradient(to bottom, var(--cell-covered-start), var(--cell-covered-end));
+    border: 1px solid #a9cce3;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    font-size: 16px;
+    cursor: default;
+    box-sizing: border-box;
+}
+
+[data-theme="dark"] .cell {
+    background: var(--cell-covered-start);
+    border: none;
+    cursor: pointer;
+    border-radius: 2px;
+}
+
+/* Hover effect for covered cells */
+.cell.covered:hover {
+    background: linear-gradient(to bottom, #eef7ff, #cce6ff);
+    border-color: #66b3ff;
+}
+
+[data-theme="dark"] .cell.covered:hover {
+    background: var(--cell-hover);
+    z-index: 1;
+}
+
+/* Active (pressed) state for covered cells */
+.cell.covered.active {
+    background: #b3d9ff;
+    border: 1px solid #66b3ff;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="dark"] .cell.covered.active {
+    background: rgba(0, 0, 0, 0.2);
+    transform: scale(0.95);
+    border: none;
+    box-shadow: none;
+}
+
+.cell.revealed {
+    background: var(--cell-revealed);
+    border: 1px solid #d1d1d1;
+    box-shadow: none;
+}
+
+[data-theme="dark"] .cell.revealed {
+    background: var(--cell-revealed);
+    border: none;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.cell.mine {
+    background-color: #ff4d4d;
+    border: 1px solid #cc0000;
+}
+
+[data-theme="dark"] .cell.mine {
+    background-color: rgba(255, 77, 77, 0.8);
+    border: 1px solid #ff4d4d;
+}
+
+.cell.flagged {
+    color: red;
+}
+
+[data-theme="dark"] .cell.flagged {
+    filter: drop-shadow(0 0 2px red);
+}
+
+/* Number Colors */
+.cell[data-value="1"] {
+    color: var(--color-1);
+}
+
+.cell[data-value="2"] {
+    color: var(--color-2);
+}
+
+.cell[data-value="3"] {
+    color: var(--color-3);
+}
+
+.cell[data-value="4"] {
+    color: var(--color-4);
+}
+
+.cell[data-value="5"] {
+    color: var(--color-5);
+}
+
+.cell[data-value="6"] {
+    color: var(--color-6);
+}
+
+.cell[data-value="7"] {
+    color: var(--color-7);
+}
+
+.cell[data-value="8"] {
+    color: var(--color-8);
+}
+
+[data-theme="dark"] .cell[data-value="1"] {
+    text-shadow: 0 0 5px rgba(77, 148, 255, 0.5);
+}
+
+[data-theme="dark"] .cell[data-value="2"] {
+    text-shadow: 0 0 5px rgba(77, 255, 136, 0.5);
+}
+
+[data-theme="dark"] .cell[data-value="3"] {
+    text-shadow: 0 0 5px rgba(255, 77, 77, 0.5);
+}
+
+.controls {
+    margin-top: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    color: var(--text-color);
+    font-size: 14px;
+}
+
+[data-theme="dark"] .controls {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: 1px solid var(--border-light);
+}
+
+.theme-btn {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 0;
+    transition: transform 0.2s;
+}
+
+.theme-btn:hover {
+    transform: scale(1.2);
+}
+
+input[type="range"] {
+    cursor: pointer;
+    accent-color: var(--accent-color);
+}
+
+/* Animations */
+@keyframes explode {
+    0% {
+        transform: scale(1);
+        background-color: #ff4d4d;
+    }
+
+    50% {
+        transform: scale(1.3);
+        background-color: #ff0000;
+        box-shadow: 0 0 10px #ff0000;
+    }
+
+    100% {
+        transform: scale(1);
+        background-color: #ff4d4d;
+    }
+}
+
+.cell.exploded {
+    animation: explode 0.3s ease-out;
+    z-index: 10;
+    border-color: #990000;
+}
