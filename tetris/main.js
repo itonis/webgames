@@ -26,6 +26,10 @@ function play() {
     resetGame();
     animate();
     document.getElementById('overlay').classList.add('hidden');
+
+    // Fix focus issue: Blur button and focus app container
+    document.getElementById('start-btn').blur();
+    document.getElementById('app').focus();
 }
 
 function resetGame() {
@@ -54,7 +58,7 @@ function animate(now = 0) {
 }
 
 function drop() {
-    let p = moves[KEY.DOWN](board.piece);
+    let p = moves['ArrowDown'](board.piece);
     if (board.valid(p)) {
         board.piece.move(p);
         lastMoveWasRotation = false;
@@ -73,16 +77,11 @@ function freeze() {
     if (board.piece.typeId === 6 && lastMoveWasRotation) { // 6 is T
         // Check corners
         let corners = 0;
-        // T piece center is at (1,1) in its 3x3 shape.
-        // We check (0,0), (2,0), (0,2), (2,2) relative to piece x,y
-        // But we need to check board cells.
-        // piece.x, piece.y is top-left of the 3x3 box.
         let x = board.piece.x;
         let y = board.piece.y;
 
-        // Corners of the 3x3 bounding box
         const checkCorner = (cx, cy) => {
-            if (cx < 0 || cx >= COLS || cy >= ROWS) return true; // Wall/Floor counts as filled for T-spin
+            if (cx < 0 || cx >= COLS || cy >= ROWS) return true;
             return board.grid[cy] && board.grid[cy][cx] !== 0;
         };
 
@@ -99,22 +98,12 @@ function freeze() {
 
     const lines = board.clearLines();
 
-    // Scoring
-    // Standard Nintendo Scoring System
-    // Level * ...
-    // 1 line: 40
-    // 2 lines: 100
-    // 3 lines: 300
-    // 4 lines: 1200
-    // T-Spin: 400 * level
-    // T-Spin Double: 1200 * level
-
     let points = 0;
     if (tSpin) {
-        if (lines === 0) points = 400 * account.level; // T-Spin Mini/No lines? Standard usually 400
-        else if (lines === 1) points = 800 * account.level; // T-Spin Single
-        else if (lines === 2) points = 1200 * account.level; // T-Spin Double
-        else if (lines === 3) points = 1600 * account.level; // T-Spin Triple
+        if (lines === 0) points = 400 * account.level;
+        else if (lines === 1) points = 800 * account.level;
+        else if (lines === 2) points = 1200 * account.level;
+        else if (lines === 3) points = 1600 * account.level;
     } else {
         if (lines === 1) points = 40 * account.level;
         else if (lines === 2) points = 100 * account.level;
@@ -125,7 +114,6 @@ function freeze() {
     account.score += points;
     account.lines += lines;
 
-    // Level up every 10 lines
     const newLevel = Math.floor(account.lines / 10) + 1;
     if (newLevel > account.level) {
         account.level = newLevel;
@@ -167,26 +155,31 @@ function updateAccount(key, value) {
 }
 
 const moves = {
-    [37]: p => ({ ...p, x: p.x - 1 }), // Left
-    [39]: p => ({ ...p, x: p.x + 1 }), // Right
-    [40]: p => ({ ...p, y: p.y + 1 }), // Down
-    [38]: p => board.rotate(p, 1),     // Up (Rotate CW)
-    [32]: p => ({ ...p, y: p.y + 1 })  // Space (Hard Drop - handled separately)
+    'ArrowLeft': p => ({ ...p, x: p.x - 1 }),
+    'ArrowRight': p => ({ ...p, x: p.x + 1 }),
+    'ArrowDown': p => ({ ...p, y: p.y + 1 }),
+    'ArrowUp': p => board.rotate(p, 1),
+    'Space': p => ({ ...p, y: p.y + 1 })
 };
 
-const KEY = {
-    SPACE: 32,
-    LEFT: 37,
-    UP: 38,
-    RIGHT: 39,
-    DOWN: 40,
-    SHIFT: 16,
-    P: 80
+const KEY_MAP = {
+    'Space': 'Space',
+    'ArrowLeft': 'ArrowLeft',
+    'ArrowUp': 'ArrowUp',
+    'ArrowRight': 'ArrowRight',
+    'ArrowDown': 'ArrowDown',
+    'ShiftLeft': 'Shift',
+    'ShiftRight': 'Shift',
+    'KeyP': 'P'
 };
 
 document.addEventListener('keydown', event => {
-    if (event.keyCode === KEY.P) {
-        // Pause
+    // Prevent default scrolling for game keys
+    if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space'].includes(event.code)) {
+        event.preventDefault();
+    }
+
+    if (event.code === 'KeyP') {
         if (document.getElementById('overlay').classList.contains('hidden')) {
             cancelAnimationFrame(requestId);
             document.getElementById('overlay-title').innerText = "PAUSED";
@@ -194,7 +187,6 @@ document.addEventListener('keydown', event => {
             document.getElementById('start-btn').innerText = "Resume";
             document.getElementById('overlay').classList.remove('hidden');
         } else {
-            // Resume
             document.getElementById('overlay').classList.add('hidden');
             animate();
         }
@@ -202,35 +194,33 @@ document.addEventListener('keydown', event => {
     }
 
     if (document.getElementById('overlay').classList.contains('hidden')) {
-        if (event.keyCode === KEY.SPACE) {
+        if (event.code === 'Space') {
             // Hard Drop
             let p = board.piece;
-            while (board.valid(moves[KEY.DOWN](p))) {
-                p = moves[KEY.DOWN](p);
-                account.score += 2; // Hard drop points
+            while (board.valid(moves['ArrowDown'](p))) {
+                p = moves['ArrowDown'](p);
+                account.score += 2;
             }
             board.piece.move(p);
-            freeze(); // Lock immediately
+            freeze();
             updateAccount('score', account.score);
             lastMoveWasRotation = false;
-        } else if (event.keyCode === KEY.SHIFT) {
+        } else if (event.code === 'ShiftLeft' || event.code === 'ShiftRight') {
             board.hold();
             lastMoveWasRotation = false;
-        } else if (moves[event.keyCode]) {
-            event.preventDefault();
-            let p = moves[event.keyCode](board.piece);
+        } else if (moves[event.code]) {
+            let p = moves[event.code](board.piece);
 
-            if (event.keyCode === KEY.UP) {
-                // Rotation
-                if (p) { // Rotate returns null if invalid
+            if (event.code === 'ArrowUp') {
+                if (p) {
                     board.piece.move(p);
                     lastMoveWasRotation = true;
                 }
             } else {
                 if (board.valid(p)) {
                     board.piece.move(p);
-                    if (event.keyCode === KEY.DOWN) {
-                        account.score += 1; // Soft drop points
+                    if (event.code === 'ArrowDown') {
+                        account.score += 1;
                         updateAccount('score', account.score);
                     }
                     lastMoveWasRotation = false;
@@ -244,16 +234,16 @@ document.getElementById('start-btn').addEventListener('click', () => {
     play();
 });
 
-// Theme Toggle
 const themeToggleBtn = document.getElementById('theme-toggle');
 themeToggleBtn.addEventListener('click', () => {
     const html = document.documentElement;
     const currentTheme = html.getAttribute('data-theme');
     const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
     html.setAttribute('data-theme', newTheme);
+    // Remove focus from toggle button
+    themeToggleBtn.blur();
 });
 
-// Scale Slider
 const scaleSlider = document.getElementById('scale-slider');
 const app = document.getElementById('app');
 scaleSlider.addEventListener('input', (e) => {
