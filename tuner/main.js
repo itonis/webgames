@@ -14,6 +14,8 @@ class TunerApp {
         this.playRefBtn = document.getElementById('play-ref-btn');
         this.refFreqInput = document.getElementById('ref-freq');
         this.refSlider = document.getElementById('ref-slider');
+        this.smoothingSlider = document.getElementById('smoothing-slider');
+        this.smoothingVal = document.getElementById('smoothing-val');
         this.themeToggle = document.getElementById('theme-toggle');
 
         this.noteLetter = document.getElementById('note-letter');
@@ -57,6 +59,13 @@ class TunerApp {
             this.refFreq = val;
             this.refFreqInput.value = val;
             this.updateToneIfPlaying();
+        });
+
+        // Smoothing Slider
+        this.smoothingSlider.addEventListener('input', (e) => {
+            const val = parseInt(e.target.value);
+            this.smoothingVal.textContent = val;
+            this.audioEngine.setSmoothingWindow(val);
         });
 
         this.themeToggle.addEventListener('click', () => this.toggleTheme());

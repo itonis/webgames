@@ -7,6 +7,14 @@ export class AudioEngine {
         this.isListening = false;
         this.oscillator = null;
         this.gainNode = null;
+
+        // Smoothing State
+        this.pitchBuffer = []; // Array of { timestamp, pitch }
+        this.smoothingWindowMs = 100; // default
+    }
+
+    setSmoothingWindow(ms) {
+        this.smoothingWindowMs = ms;
     }
 
     async init() {
@@ -39,16 +47,33 @@ export class AudioEngine {
             this.mediaStreamSource = null;
         }
         this.isListening = false;
+        this.pitchBuffer = [];
     }
 
     getPitch() {
         if (!this.isListening || !this.analyser) return null;
 
         this.analyser.getFloatTimeDomainData(this.buffer);
-        const frequency = this.autoCorrelate(this.buffer, this.audioContext.sampleRate);
+        const rawPitch = this.autoCorrelate(this.buffer, this.audioContext.sampleRate);
 
-        if (frequency === -1) return null;
-        return frequency;
+        const now = performance.now();
+
+        // Add valid pitch to buffer
+        if (rawPitch !== -1) {
+            this.pitchBuffer.push({ timestamp: now, pitch: rawPitch });
+        }
+
+        // Remove old samples
+        const cutoff = now - this.smoothingWindowMs;
+        while (this.pitchBuffer.length > 0 && this.pitchBuffer[0].timestamp < cutoff) {
+            this.pitchBuffer.shift();
+        }
+
+        // Calculate Average
+        if (this.pitchBuffer.length === 0) return null;
+
+        const sum = this.pitchBuffer.reduce((acc, item) => acc + item.pitch, 0);
+        return sum / this.pitchBuffer.length;
     }
 
     // Auto-correlation algorithm to determine fundamental frequency
