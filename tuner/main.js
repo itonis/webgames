@@ -13,12 +13,14 @@ class TunerApp {
         this.startBtn = document.getElementById('start-btn');
         this.playRefBtn = document.getElementById('play-ref-btn');
         this.refFreqInput = document.getElementById('ref-freq');
+        this.refSlider = document.getElementById('ref-slider');
         this.themeToggle = document.getElementById('theme-toggle');
 
         this.noteLetter = document.getElementById('note-letter');
         this.noteSharp = document.getElementById('note-sharp');
         this.noteOctave = document.getElementById('note-octave');
         this.centsDisplay = document.getElementById('cents-display');
+        this.freqDisplay = document.getElementById('freq-display');
 
         this.canvas = document.getElementById('tuner-gauge');
         this.ctx = this.canvas.getContext('2d');
@@ -36,14 +38,34 @@ class TunerApp {
     bindEvents() {
         this.startBtn.addEventListener('click', () => this.toggleMicrophone());
         this.playRefBtn.addEventListener('click', () => this.toggleRefTone());
-        this.refFreqInput.addEventListener('change', (e) => {
-            this.refFreq = parseInt(e.target.value) || 440;
-            if (this.isPlayingRef) {
-                this.audioEngine.playTone(this.refFreq); // Update tone if playing
-            }
+
+        // Sync Input -> Slider
+        this.refFreqInput.addEventListener('input', (e) => {
+            let val = parseInt(e.target.value) || 440;
+            // Clamp value
+            if (val < 428) val = 428;
+            if (val > 452) val = 452;
+
+            this.refFreq = val;
+            this.refSlider.value = val;
+            this.updateToneIfPlaying();
+        });
+
+        // Sync Slider -> Input
+        this.refSlider.addEventListener('input', (e) => {
+            const val = parseInt(e.target.value);
+            this.refFreq = val;
+            this.refFreqInput.value = val;
+            this.updateToneIfPlaying();
         });
 
         this.themeToggle.addEventListener('click', () => this.toggleTheme());
+    }
+
+    updateToneIfPlaying() {
+        if (this.isPlayingRef) {
+            this.audioEngine.playTone(this.refFreq);
+        }
     }
 
     initTheme() {
@@ -78,12 +100,12 @@ class TunerApp {
     toggleRefTone() {
         if (this.isPlayingRef) {
             this.audioEngine.stopTone();
-            this.playRefBtn.textContent = "Play Tone";
+            this.playRefBtn.textContent = "Tone";
             this.playRefBtn.classList.remove('active');
             this.isPlayingRef = false;
         } else {
             this.audioEngine.playTone(this.refFreq);
-            this.playRefBtn.textContent = "Stop Tone";
+            this.playRefBtn.textContent = "Stop";
             this.playRefBtn.classList.add('active');
             this.isPlayingRef = true;
         }
@@ -96,9 +118,8 @@ class TunerApp {
             this.updateDisplay(noteData);
             this.visualState.targetCents = noteData.cents;
         } else {
-            // Silence handling - keep needle falling or stay still?
-            // For now, do nothing on silence, let user see last note or maybe we should drift?
-            // Just leaving it allows reading the last note.
+            // Keep previous display to avoid flickering, or maybe fade?
+            // Usually tuners hold the last note for a bit.
         }
     }
 
@@ -127,20 +148,27 @@ class TunerApp {
 
         const sign = data.cents > 0 ? "+" : "";
         this.centsDisplay.textContent = `${sign}${data.cents} cents`;
+        this.freqDisplay.textContent = `${data.frequency.toFixed(1)} Hz`;
 
         // Continuous Color based on tuning
         const absCents = Math.abs(data.cents);
         const sensitivity = 50;
-        // Map 0 -> 120 (Green), 50 -> 0 (Red)
         const hue = Math.max(0, 120 - (Math.min(sensitivity, absCents) / sensitivity) * 120);
 
-        this.centsDisplay.style.color = `hsl(${hue}, 90%, 50%)`;
+        // Adjust Lightness based on Theme for contrast
+        const theme = document.documentElement.getAttribute('data-theme');
+        const lightness = theme === 'light' ? '40%' : '50%';
 
-        // Add glow effect/shadow if in tune
+        const color = `hsl(${hue}, 90%, ${lightness})`;
+
+        this.centsDisplay.style.color = color;
+        this.freqDisplay.style.color = color;
+
+        // Glow effect
         if (absCents < 5) {
-            this.noteLetter.style.textShadow = `0 0 30px hsl(${hue}, 90%, 50%)`;
+            this.noteLetter.style.textShadow = `0 0 30px ${color}`;
         } else {
-            this.noteLetter.style.textShadow = `0 0 20px rgba(56, 189, 248, 0.2)`; // Default Back
+            this.noteLetter.style.textShadow = `0 0 20px rgba(56, 189, 248, 0.2)`;
         }
     }
 
@@ -149,8 +177,10 @@ class TunerApp {
         this.noteSharp.textContent = "";
         this.noteOctave.textContent = "";
         this.centsDisplay.textContent = "0 cents";
+        this.freqDisplay.textContent = "-- Hz";
         this.visualState.targetCents = 0;
         this.centsDisplay.style.color = '';
+        this.freqDisplay.style.color = '';
         this.noteLetter.style.textShadow = '';
     }
 
@@ -161,24 +191,24 @@ class TunerApp {
 
         ctx.clearRect(0, 0, w, h);
 
-        // Center point
         const cx = w / 2;
         const cy = h - 20;
         const radius = Math.min(w, h * 2) / 2 - 20;
 
-        // Draw Arc Background
+        // Background Arc
         ctx.beginPath();
-        ctx.arc(cx, cy, radius, Math.PI, 0); // 180 degree arc
+        ctx.arc(cx, cy, radius, Math.PI, 0);
         ctx.lineWidth = 10;
-        ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--secondary-color').trim() + '33'; // low opacity
+        ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--secondary-color').trim() + '33';
         ctx.stroke();
 
-        // Draw Tick Marks
+        // Tick Marks
         for (let i = -50; i <= 50; i += 10) {
+            // Map -50 (Left/PI) to +50 (Right/2PI)
             const angle = Math.PI + (i + 50) / 100 * Math.PI;
 
             const startR = radius - 15;
-            const endR = radius - (i === 0 ? 30 : 20); // Center tick is longer
+            const endR = radius - (i === 0 ? 30 : 20);
 
             const sx = cx + Math.cos(angle) * startR;
             const sy = cy + Math.sin(angle) * startR;
@@ -193,26 +223,16 @@ class TunerApp {
             ctx.stroke();
         }
 
-        // Draw Needle
-        // Smooth interpolation
+        // Needle
         this.visualState.currentCents += (this.visualState.targetCents - this.visualState.currentCents) * 0.2;
 
-        // Map cents (-50 to +50) to angle (Math.PI to 0 -- actually Math.PI is left, 0 is right)
-        // -50 cents = PI, +50 cents = 0? No.
-        // Left is flat (-), Right is sharp (+)
-        // Let's say -50 is 180deg (Math.PI), +50 is 0deg (0).
-        // Center 0 is 90deg (Math.PI/2) -- Wait, standard canvas arc: 0 is right, PI is left.
-        // So 0 cents should be -Math.PI/2 (top) ?? 
-        // No, we are drawing a semi-circle from PI (left) to 0 (right).
-        // So -50 cents -> PI.
-        // 0 cents -> PI/2 (Up).
-        // +50 cents -> 0.
-        // Formula: angle = Math.PI - ((cents + 50) / 100) * Math.PI
-
-        // Clamp cents for visual
+        // Clamp
         const clampedCents = Math.max(-50, Math.min(50, this.visualState.currentCents));
         const normalized = (clampedCents + 50) / 100; // 0 to 1
-        const needleAngle = Math.PI - normalized * Math.PI;
+
+        // Correct Angle Logic:
+        // 0 (Left/PI) -> 1 (Right/2PI)
+        const needleAngle = Math.PI + normalized * Math.PI;
 
         const nx = cx + Math.cos(needleAngle) * (radius - 10);
         const ny = cy + Math.sin(needleAngle) * (radius - 10);
@@ -222,19 +242,22 @@ class TunerApp {
         ctx.lineTo(nx, ny);
         ctx.lineWidth = 4;
 
-        // Continuous Color Logic (Green -> Yellow -> Red)
+        // Color Logic
         const absVal = Math.abs(this.visualState.currentCents);
         const sensitivity = 50;
         const hue = Math.max(0, 120 - (Math.min(sensitivity, absVal) / sensitivity) * 120);
 
-        ctx.strokeStyle = `hsl(${hue}, 90%, 50%)`;
-        ctx.shadowColor = `hsl(${hue}, 90%, 50%)`;
-        ctx.shadowBlur = absVal < 5 ? 15 : 0; // Glow when in tune
+        const theme = document.documentElement.getAttribute('data-theme');
+        const lightness = theme === 'light' ? '40%' : '50%';
+
+        ctx.strokeStyle = `hsl(${hue}, 90%, ${lightness})`;
+        ctx.shadowColor = `hsl(${hue}, 90%, ${lightness})`;
+        ctx.shadowBlur = absVal < 5 ? 15 : 0;
 
         ctx.stroke();
-        ctx.shadowBlur = 0; // Reset
+        ctx.shadowBlur = 0;
 
-        // Pivot circle
+        // Pivot
         ctx.beginPath();
         ctx.arc(cx, cy, 8, 0, Math.PI * 2);
         ctx.fillStyle = ctx.strokeStyle;

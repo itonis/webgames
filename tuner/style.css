@@ -38,7 +38,8 @@ body {
     align-items: center;
     min-height: 100vh;
     transition: background-color 0.3s ease, color 0.3s ease;
-    overflow: hidden; /* Prevent scroll */
+    overflow: hidden;
+    /* Prevent scroll */
 }
 
 .app-container {
@@ -85,9 +86,17 @@ h1 {
     background-color: rgba(125, 125, 125, 0.1);
 }
 
-.icon-btn .moon { display: none; }
-[data-theme="light"] .icon-btn .sun { display: none; }
-[data-theme="light"] .icon-btn .moon { display: block; }
+.icon-btn .moon {
+    display: none;
+}
+
+[data-theme="light"] .icon-btn .sun {
+    display: none;
+}
+
+[data-theme="light"] .icon-btn .moon {
+    display: block;
+}
 
 .tuner-display {
     text-align: center;
@@ -119,6 +128,15 @@ h1 {
     margin-top: 3.5rem;
     color: var(--secondary-color);
     font-weight: 500;
+}
+
+.freq-display {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-top: -0.5rem;
+    font-variant-numeric: tabular-nums;
+    opacity: 0.9;
 }
 
 .cents-display {
@@ -157,7 +175,8 @@ button:active {
 
 .primary-btn {
     background-color: var(--primary-color);
-    color: white; /* Always white on primary */
+    color: white;
+    /* Always white on primary */
     flex: 2;
 }
 
