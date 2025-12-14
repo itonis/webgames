@@ -1,0 +1,207 @@
+:root {
+    --bg-color: #0f172a;
+    --text-color: #f8fafc;
+    --primary-color: #38bdf8;
+    --secondary-color: #94a3b8;
+    --success-color: #22c55e;
+    --warning-color: #eab308;
+    --danger-color: #ef4444;
+    --panel-bg: rgba(30, 41, 59, 0.7);
+    --glass-border: 1px solid rgba(255, 255, 255, 0.1);
+    --font-family: 'Outfit', sans-serif;
+}
+
+[data-theme="light"] {
+    --bg-color: #f0f4f8;
+    --text-color: #1e293b;
+    --primary-color: #0284c7;
+    --secondary-color: #64748b;
+    --success-color: #16a34a;
+    --warning-color: #ca8a04;
+    --danger-color: #dc2626;
+    --panel-bg: rgba(255, 255, 255, 0.7);
+    --glass-border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--font-family);
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    overflow: hidden;
+    /* Prevent scroll */
+}
+
+.app-container {
+    width: 100%;
+    max-width: 500px;
+    padding: 2rem;
+    background: var(--panel-bg);
+    backdrop-filter: blur(10px);
+    border-radius: 24px;
+    border: var(--glass-border);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: var(--primary-color);
+}
+
+.icon-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-color);
+    padding: 8px;
+    border-radius: 50%;
+    transition: background-color 0.2s;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.icon-btn:hover {
+    background-color: rgba(125, 125, 125, 0.1);
+}
+
+.icon-btn .moon {
+    display: none;
+}
+
+[data-theme="light"] .icon-btn .sun {
+    display: none;
+}
+
+[data-theme="light"] .icon-btn .moon {
+    display: block;
+}
+
+.tuner-display {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.note-display {
+    font-size: 6rem;
+    font-weight: 700;
+    line-height: 1;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    color: var(--text-color);
+    text-shadow: 0 0 20px rgba(56, 189, 248, 0.2);
+}
+
+#note-sharp {
+    font-size: 3rem;
+    margin-top: 1rem;
+    color: var(--primary-color);
+}
+
+#note-octave {
+    font-size: 2rem;
+    margin-top: 3.5rem;
+    color: var(--secondary-color);
+    font-weight: 500;
+}
+
+.freq-display {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-top: -0.5rem;
+    font-variant-numeric: tabular-nums;
+    opacity: 0.9;
+}
+
+.cents-display {
+    font-size: 1.25rem;
+    color: var(--secondary-color);
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+}
+
+.gauge-container {
+    display: flex;
+    justify-content: center;
+    margin: 1rem 0;
+}
+
+.controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+}
+
+button {
+    font-family: inherit;
+    border: none;
+    border-radius: 12px;
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.1s, opacity 0.2s;
+}
+
+button:active {
+    transform: scale(0.98);
+}
+
+.primary-btn {
+    background-color: var(--primary-color);
+    color: white;
+    /* Always white on primary */
+    flex: 2;
+}
+
+.secondary-btn {
+    background-color: rgba(125, 125, 125, 0.2);
+    color: var(--text-color);
+    flex: 1;
+}
+
+.ref-control {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 0.75rem;
+    color: var(--secondary-color);
+    flex: 1;
+}
+
+.ref-control input {
+    background: rgba(125, 125, 125, 0.1);
+    border: var(--glass-border);
+    border-radius: 8px;
+    padding: 0.5rem;
+    color: var(--text-color);
+    font-family: inherit;
+    text-align: center;
+    width: 100%;
+}

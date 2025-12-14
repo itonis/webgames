@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tetris</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div id="app" tabindex="0">
+        <header>
+            <h1>TETRIS</h1>
+            <div class="controls-top">
+                <button id="theme-toggle" aria-label="Toggle Theme">
+                    <svg class="icon-sun" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                    <svg class="icon-moon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                </button>
+            </div>
+        </header>
+
+        <div class="game-container">
+            <div class="sidebar left">
+                <div class="panel">
+                    <h2>HOLD</h2>
+                    <canvas id="hold-canvas" width="120" height="120"></canvas>
+                    <div class="key-hint">SHIFT</div>
+                </div>
+                <div class="panel controls-panel">
+                    <h2>SCALE</h2>
+                    <input type="range" id="scale-slider" min="0.5" max="1.5" step="0.1" value="1">
+                </div>
+            </div>
+
+            <div class="board-wrapper">
+                <canvas id="board" width="300" height="600"></canvas>
+                <div id="overlay" class="overlay hidden">
+                    <div class="overlay-content">
+                        <h2 id="overlay-title">PAUSED</h2>
+                        <p id="overlay-message">Press P to Resume</p>
+                        <button id="start-btn">Start Game</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar right">
+                <div class="panel">
+                    <h2>NEXT</h2>
+                    <canvas id="next-canvas" width="120" height="120"></canvas>
+                </div>
+                <div class="panel stats">
+                    <div class="stat-item">
+                        <span class="label">SCORE</span>
+                        <span class="value" id="score">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="label">LEVEL</span>
+                        <span class="value" id="level">1</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="label">LINES</span>
+                        <span class="value" id="lines">0</span>
+                    </div>
+                </div>
+                <div class="panel help">
+                    <h3>CONTROLS</h3>
+                    <ul>
+                        <li><span>Move</span> <span>← →</span></li>
+                        <li><span>Rotate</span> <span>↑</span></li>
+                        <li><span>Soft Drop</span> <span>↓</span></li>
+                        <li><span>Hard Drop</span> <span>Space</span></li>
+                        <li><span>Hold</span> <span>Shift</span></li>
+                        <li><span>Pause</span> <span>P</span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="constants.js"></script>
+    <script src="piece.js"></script>
+    <script src="board.js"></script>
+    <script src="main.js"></script>
+</body>
+
+</html>
