@@ -10,7 +10,7 @@ export class AudioEngine {
 
         // Smoothing State
         this.pitchBuffer = []; // Array of { timestamp, pitch }
-        this.smoothingWindowMs = 100; // default
+        this.smoothingWindowMs = 150; // default
     }
 
     setSmoothingWindow(ms) {
@@ -30,7 +30,7 @@ export class AudioEngine {
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
             this.mediaStreamSource = this.audioContext.createMediaStreamSource(stream);
             this.analyser = this.audioContext.createAnalyser();
-            this.analyser.fftSize = 2048;
+            this.analyser.fftSize = 4096;
             this.mediaStreamSource.connect(this.analyser);
             this.buffer = new Float32Array(this.analyser.fftSize);
             this.isListening = true;
