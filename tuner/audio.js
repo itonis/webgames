@@ -81,48 +81,52 @@ export class AudioEngine {
         let size = buffer.length;
         let rms = 0;
 
-        // Calculate Root Mean Square to determine if there's enough signal
+        // Calculate Root Mean Square
         for (let i = 0; i < size; i++) {
             const val = buffer[i];
             rms += val * val;
         }
         rms = Math.sqrt(rms / size);
 
-        // Threshold for silence/noise
+        // Threshold for silence
         if (rms < 0.01) return -1;
 
-        // Clip the buffer to the first half
-        let r1 = 0, r2 = size - 1, thres = 0.2;
-        for (let i = 0; i < size / 2; i++) {
-            if (Math.abs(buffer[i]) < thres) { r1 = i; break; }
-        }
-        for (let i = 1; i < size / 2; i++) {
-            if (Math.abs(buffer[size - i]) < thres) { r2 = size - i; break; }
-        }
+        // Optimization: Limit correlations to a valid pitch range
+        // Low E on Bass is ~41Hz -> ~1100 samples at 48kHz
+        // Let's allow down to ~30Hz which is plenty -> ~1600 samples
+        // This prevents O(N^2) on large buffers (4096)
+        const MAX_LAG = Math.min(size, 2000);
 
-        buffer = buffer.slice(r1, r2);
-        size = buffer.length;
-
-        // Perform autocorrelation
-        const c = new Array(size).fill(0);
-        for (let i = 0; i < size; i++) {
+        const c = new Array(MAX_LAG).fill(0);
+        for (let i = 0; i < MAX_LAG; i++) {
+            let sum = 0;
+            // Correlate
             for (let j = 0; j < size - i; j++) {
-                c[i] = c[i] + buffer[j] * buffer[j + i];
+                sum += buffer[j] * buffer[j + i];
             }
+            c[i] = sum;
         }
 
+        // Find the first major peak after the first valley
         let d = 0;
-        while (c[d] > c[d + 1]) d++;
+        // Descend to the first valley
+        while (d < MAX_LAG - 1 && c[d] > c[d + 1]) {
+            d++;
+        }
+
         let maxval = -1, maxpos = -1;
-        for (let i = d; i < size; i++) {
+        // Search for peak
+        for (let i = d; i < MAX_LAG; i++) {
             if (c[i] > maxval) {
                 maxval = c[i];
                 maxpos = i;
             }
         }
-        let T0 = maxpos;
 
-        // Interpolation logic for better precision
+        let T0 = maxpos;
+        if (T0 <= 0 || T0 >= MAX_LAG - 1) return -1; // No valid peak found
+
+        // Interpolation
         let x1 = c[T0 - 1], x2 = c[T0], x3 = c[T0 + 1];
         let a = (x1 + x3 - 2 * x2) / 2;
         let b = (x3 - x1) / 2;
