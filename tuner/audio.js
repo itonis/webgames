@@ -78,6 +78,21 @@ export class AudioEngine {
 
     // Auto-correlation algorithm to determine fundamental frequency
     autoCorrelate(buffer, sampleRate) {
+        // Downsampling optimization
+        // If buffer is large, downsample to reduce CPU usage. 
+        // 4096 samples at 48kHz is ~85ms. 
+        // Downsampling by 4 gives 1024 samples at 12kHz.
+        // Highest detectable freq becomes 6kHz (Nyquist), which is plenty for tuning.
+        if (buffer.length > 2048) {
+            const stride = 4;
+            const downsampledLength = Math.floor(buffer.length / stride);
+            const downsampledBuffer = new Float32Array(downsampledLength);
+            for (let i = 0; i < downsampledLength; i++) {
+                downsampledBuffer[i] = buffer[i * stride];
+            }
+            return this.autoCorrelate(downsampledBuffer, sampleRate / stride);
+        }
+
         let size = buffer.length;
         let rms = 0;
 
@@ -92,10 +107,10 @@ export class AudioEngine {
         if (rms < 0.01) return -1;
 
         // Optimization: Limit correlations to a valid pitch range
-        // Low E on Bass is ~41Hz -> ~1100 samples at 48kHz
-        // Let's allow down to ~30Hz which is plenty -> ~1600 samples
-        // This prevents O(N^2) on large buffers (4096)
-        const MAX_LAG = Math.min(size, 2000);
+        // For 1024 samples (downsampled), we still want to cover low frequencies.
+        // MAX_LAG of size is safe (covers full buffer duration).
+        // For 1024 samples at 12kHz, duration is ~85ms (Min freq ~11Hz).
+        const MAX_LAG = Math.floor(size * 0.9); // Don't go to the very edge
 
         const c = new Array(MAX_LAG).fill(0);
         for (let i = 0; i < MAX_LAG; i++) {
