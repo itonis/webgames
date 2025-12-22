@@ -21,25 +21,25 @@ const gameContainer = document.querySelector('.game-container');
 const themeToggle = document.getElementById('theme-toggle');
 
 // Theme Logic
-function toggleTheme() {
-    const isDark = document.body.hasAttribute('data-theme');
-    if (isDark) {
-        document.body.removeAttribute('data-theme');
-        themeToggle.textContent = '🌙';
-        localStorage.setItem('theme', 'light');
-    } else {
+function setTheme(theme) {
+    if (theme === 'dark') {
         document.body.setAttribute('data-theme', 'dark');
         themeToggle.textContent = '☀️';
-        localStorage.setItem('theme', 'dark');
+    } else {
+        document.body.removeAttribute('data-theme');
+        themeToggle.textContent = '🌙';
     }
+    localStorage.setItem('theme', theme);
+}
+
+function toggleTheme() {
+    const currentTheme = localStorage.getItem('theme') || 'light';
+    setTheme(currentTheme === 'dark' ? 'light' : 'dark');
 }
 
 // Load Theme
-const savedTheme = localStorage.getItem('theme');
-if (savedTheme === 'dark') {
-    document.body.setAttribute('data-theme', 'dark');
-    themeToggle.textContent = '☀️';
-}
+const savedTheme = localStorage.getItem('theme') || 'light';
+setTheme(savedTheme);
 
 themeToggle.addEventListener('click', toggleTheme);
 
