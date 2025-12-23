@@ -32,6 +32,7 @@
             <button id="theme-toggle" class="theme-btn" aria-label="Toggle Theme">🌙</button>
             <label for="scale-slider">UI Scale</label>
             <input type="range" id="scale-slider" min="0.5" max="2" step="0.1" value="1.8">
+            <div class="version-label">v1.1</div>
         </div>
     </div>
 
@@ -42,10 +43,26 @@
                 navigator.serviceWorker.register('sw.js')
                     .then(registration => {
                         console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                        registration.onupdatefound = () => {
+                            const newWorker = registration.installing;
+                            newWorker.onstatechange = () => {
+                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                    console.log('New content available, refreshing...');
+                                }
+                            };
+                        };
                     })
                     .catch(err => {
                         console.log('ServiceWorker registration failed: ', err);
                     });
+
+                // Reload page if the controller changes
+                let refreshing;
+                navigator.serviceWorker.addEventListener('controllerchange', () => {
+                    if (refreshing) return;
+                    window.location.reload();
+                    refreshing = true;
+                });
             });
         }
     </script>
