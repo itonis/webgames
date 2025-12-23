@@ -15,7 +15,7 @@
     --counter-bg: #000;
     --counter-text: #ff0000;
     --counter-border: var(--border-shadow);
-    
+
     --btn-reset-bg: linear-gradient(to bottom, #ffffff, #e3f1fc);
     --btn-reset-border: var(--border-shadow);
     --btn-reset-hover-bg: linear-gradient(to bottom, #fffff0, #e3f1fc);
@@ -26,10 +26,10 @@
     /* --- Game Board & Cells --- */
     --board-bg: #fff;
     --board-border: var(--border-shadow);
-    
+
     --cell-size: 24px;
     --cell-border: #a9cce3;
-    
+
     /* Cell: Covered */
     --cell-covered-bg: linear-gradient(to bottom, #f2f9fc, #c9e3f7);
     --cell-covered-hover-bg: linear-gradient(to bottom, #eef7ff, #cce6ff);
@@ -37,12 +37,12 @@
     --cell-covered-active-bg: #b3d9ff;
     --cell-covered-active-border: #66b3ff;
     --cell-covered-active-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
-    
+
     /* Cell: Revealed */
     --cell-revealed-bg: #f5f5f5;
     --cell-revealed-border: #d1d1d1;
     --cell-revealed-shadow: none;
-    
+
     /* Cell: Mine & Flag */
     --cell-mine-bg: #ff4d4d;
     --cell-mine-border: #cc0000;
@@ -73,10 +73,10 @@
     --border-main: rgba(0, 0, 0, 0.5);
     --border-highlight: rgba(255, 255, 255, 0.1);
     --border-shadow: rgba(0, 0, 0, 0.5);
-    
+
     /* --- Header Elements --- */
     --counter-border: var(--border-shadow);
-    
+
     --btn-reset-bg: linear-gradient(to bottom, #000000, #1c0e03);
     --btn-reset-border: var(--border-shadow);
     --btn-reset-hover-bg: linear-gradient(to bottom, #00000f, #1c0e03);
@@ -87,27 +87,28 @@
     /* --- Game Board & Cells --- */
     --board-bg: rgba(0, 0, 0, 0.3);
     --board-border: var(--border-highlight);
-    
+
     --cell-border: #212229;
-    
+
     /* Cell: Covered */
     --cell-covered-bg: linear-gradient(to bottom, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.05));
     --cell-covered-hover-bg: linear-gradient(to bottom, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.15));
-    --cell-covered-hover-border: #66b3ff; /* Keeping same as light for now or adjust? Original light was 66b3ff. Dark manual had distinct? Actually dark didn't specify hover border change explicitly in my audit, but I'll stick to a safe blue. */
+    --cell-covered-hover-border: #66b3ff;
+    /* Keeping same as light for now or adjust? Original light was 66b3ff. Dark manual had distinct? Actually dark didn't specify hover border change explicitly in my audit, but I'll stick to a safe blue. */
     --cell-covered-active-bg: rgba(0, 0, 0, 0.2);
     --cell-covered-active-border: #294561;
     --cell-covered-active-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
-    
+
     /* Cell: Revealed */
     --cell-revealed-bg: rgba(255, 255, 255, 0.2);
     --cell-revealed-border: #333333;
     --cell-revealed-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
-    
+
     /* Cell: Mine & Flag */
     --cell-mine-bg: rgba(255, 77, 77, 0.8);
     --cell-mine-border: #ff4d4d;
-    
-     /* --- Accents & Controls --- */
+
+    /* --- Accents & Controls --- */
     --accent-color: #00d4ff;
 
     /* --- Number Colors (Neon) --- */
@@ -139,7 +140,8 @@ body {
     background: var(--bg-game);
     padding: 12px;
     border-radius: 8px;
-    border: 1px solid var(--border-shadow); /* was border-dark */
+    border: 1px solid var(--border-shadow);
+    /* was border-dark */
     box-shadow: var(--shadow-game);
     transform-origin: top center;
     transition: transform 0.2s ease, background 0.3s;
@@ -258,14 +260,37 @@ body {
 }
 
 /* Number Colors */
-.cell[data-value="1"] { color: var(--color-1); }
-.cell[data-value="2"] { color: var(--color-2); }
-.cell[data-value="3"] { color: var(--color-3); }
-.cell[data-value="4"] { color: var(--color-4); }
-.cell[data-value="5"] { color: var(--color-5); }
-.cell[data-value="6"] { color: var(--color-6); }
-.cell[data-value="7"] { color: var(--color-7); }
-.cell[data-value="8"] { color: var(--color-8); }
+.cell[data-value="1"] {
+    color: var(--color-1);
+}
+
+.cell[data-value="2"] {
+    color: var(--color-2);
+}
+
+.cell[data-value="3"] {
+    color: var(--color-3);
+}
+
+.cell[data-value="4"] {
+    color: var(--color-4);
+}
+
+.cell[data-value="5"] {
+    color: var(--color-5);
+}
+
+.cell[data-value="6"] {
+    color: var(--color-6);
+}
+
+.cell[data-value="7"] {
+    color: var(--color-7);
+}
+
+.cell[data-value="8"] {
+    color: var(--color-8);
+}
 
 .controls {
     margin-top: 15px;
@@ -318,4 +343,10 @@ input[type="range"] {
     animation: explode 0.3s ease-out;
     z-index: 10;
     border-color: #990000;
+}
+
+.version-label {
+    font-size: 0.8rem;
+    opacity: 0.6;
+    margin-left: 10px;
 }
