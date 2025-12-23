@@ -9,10 +9,17 @@ export class AudioEngine {
         this.gainNode = null;
 
         // Worker
-        this.worker = new Worker('pitch-worker.js');
-        this.worker.onmessage = (e) => {
-            this.handleWorkerMessage(e.data);
-        };
+        try {
+            this.worker = new Worker(new URL('pitch-worker.js', import.meta.url));
+            this.worker.onmessage = (e) => {
+                this.handleWorkerMessage(e.data);
+            };
+            this.worker.onerror = (e) => {
+                console.error('Pitch Worker Error:', e);
+            };
+        } catch (err) {
+            console.error('Failed to create Pitch Worker:', err);
+        }
 
         // State
         this.latestPitch = null;
