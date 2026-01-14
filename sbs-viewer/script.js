@@ -46,6 +46,12 @@ function setupEventListeners() {
 
     // Swap
     dom.swapBtn.addEventListener('click', swapImages);
+    // Drag and Drop
+    [dom.viewLeft, dom.viewRight].forEach(el => {
+        el.addEventListener('dragover', handleDragOver);
+        el.addEventListener('dragleave', handleDragLeave);
+        el.addEventListener('drop', handleDrop);
+    });
 }
 
 // --- Image Handling ---
@@ -53,15 +59,36 @@ function setupEventListeners() {
 function handleFileSelect(event, imgElement) {
     const file = event.target.files[0];
     if (!file) return;
+    loadImage(file, imgElement);
+}
 
+function handleDragOver(e) {
+    e.preventDefault();
+    e.currentTarget.classList.add('drag-over');
+}
+
+function handleDragLeave(e) {
+    e.currentTarget.classList.remove('drag-over');
+}
+
+function handleDrop(e) {
+    e.preventDefault();
+    e.currentTarget.classList.remove('drag-over');
+
+    const file = e.dataTransfer.files[0];
+    if (!file || !file.type.startsWith('image/')) return;
+
+    // Determine target image element based on viewport
+    const targetImg = e.currentTarget.id === 'viewLeft' ? dom.imgLeft : dom.imgRight;
+    loadImage(file, targetImg);
+}
+
+function loadImage(file, imgElement) {
     const reader = new FileReader();
     reader.onload = (e) => {
         imgElement.src = e.target.result;
         imgElement.style.display = 'block';
         imgElement.onload = () => {
-            // Reset view on new image load if it's the first one or requested? 
-            // For now, let's reset to center fit if both are empty or just keep current transform
-            // Better: Reset to fit
             if (imgElement === dom.imgLeft) {
                 state.initialLeftImageWidth = imgElement.naturalWidth;
                 state.initialLeftImageHeight = imgElement.naturalHeight;
@@ -75,26 +102,20 @@ function handleFileSelect(event, imgElement) {
 }
 
 function resetView(img) {
-    // Basic reset to center and fit
-    // This is a simplified reset, can be improved to "contain" logic
     state.scale = 1;
     state.panX = 0;
     state.panY = 0;
 
-    // Auto-fit logic for initial load
-    const viewport = dom.viewLeft.getBoundingClientRect(); // Use left as reference
+    const viewport = dom.viewLeft.getBoundingClientRect();
     const imgAspect = img.naturalWidth / img.naturalHeight;
     const viewAspect = viewport.width / viewport.height;
 
     if (imgAspect > viewAspect) {
-        // wider than viewport, fit width
         state.scale = viewport.width / img.naturalWidth;
     } else {
-        // taller than viewport, fit height
         state.scale = viewport.height / img.naturalHeight;
     }
 
-    // Center it
     state.panX = (viewport.width - img.naturalWidth * state.scale) / 2;
     state.panY = (viewport.height - img.naturalHeight * state.scale) / 2;
 
@@ -108,7 +129,6 @@ function swapImages() {
     dom.imgLeft.src = srcRight;
     dom.imgRight.src = srcLeft;
 
-    // Handle visibility/empty states if one side is empty
     const leftVisible = dom.imgLeft.style.display;
     dom.imgLeft.style.display = dom.imgRight.style.display;
     dom.imgRight.style.display = leftVisible;
@@ -133,18 +153,9 @@ function handleWheel(e) {
 
     newScale = Math.max(0.1, Math.min(newScale, 20)); // Limits
 
-    // Zoom towards mouse pointer
-    // We need to calculate how much to adjust panX/panY to keep the point under mouse stationary
-    // Mouse relative to viewport
-    // Note: e.currentTarget might be left or right viewport
     const rect = e.currentTarget.getBoundingClientRect();
     const mouseX = e.clientX - rect.left;
     const mouseY = e.clientY - rect.top;
-
-    // (mouseX - panX) / oldScale = imageX (coordinate in image space)
-    // We want: (mouseX - newPanX) / newScale = imageX
-    // So: newPanX = mouseX - imageX * newScale
-    //             = mouseX - (mouseX - panX) * (newScale / oldScale)
 
     state.panX = mouseX - (mouseX - state.panX) * (newScale / oldScale);
     state.panY = mouseY - (mouseY - state.panY) * (newScale / oldScale);
