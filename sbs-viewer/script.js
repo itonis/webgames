@@ -102,20 +102,31 @@ function loadImage(file, imgElement) {
 }
 
 function resetView(img) {
+    if (!img.naturalWidth || !img.naturalHeight) return;
+
     state.scale = 1;
     state.panX = 0;
     state.panY = 0;
 
     const viewport = dom.viewLeft.getBoundingClientRect();
+    if (viewport.width === 0 || viewport.height === 0) return;
+
     const imgAspect = img.naturalWidth / img.naturalHeight;
     const viewAspect = viewport.width / viewport.height;
 
+    let fitScale;
     if (imgAspect > viewAspect) {
-        state.scale = viewport.width / img.naturalWidth;
+        // Fit width
+        fitScale = viewport.width / img.naturalWidth;
     } else {
-        state.scale = viewport.height / img.naturalHeight;
+        // Fit height
+        fitScale = viewport.height / img.naturalHeight;
     }
 
+    // "Center or fit": Use fit scale but don't upscale small images (cap at 1)
+    state.scale = Math.min(1, fitScale);
+
+    // Center the image
     state.panX = (viewport.width - img.naturalWidth * state.scale) / 2;
     state.panY = (viewport.height - img.naturalHeight * state.scale) / 2;
 
