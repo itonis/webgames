@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SBS Pic Viewer</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="app-container">
+        <div class="toolbar">
+            <h1>SBS Pic Viewer</h1>
+            <div class="controls">
+                <label class="file-input-label">
+                    <span>Load Left</span>
+                    <input type="file" id="fileLeft" accept="image/*">
+                </label>
+                <label class="file-input-label">
+                    <span>Load Right</span>
+                    <input type="file" id="fileRight" accept="image/*">
+                </label>
+                <button id="swapBtn" class="btn">Swap Sides</button>
+            </div>
+        </div>
+
+        <div class="viewer-container">
+            <div class="viewport" id="viewLeft">
+                <div class="empty-state">Load Image 1</div>
+                <img id="imgLeft" class="image-content" draggable="false">
+            </div>
+
+            <div class="separator"></div>
+
+            <div class="viewport" id="viewRight">
+                <div class="empty-state">Load Image 2</div>
+                <img id="imgRight" class="image-content" draggable="false">
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>
