@@ -123,6 +123,10 @@ function resetView(img) {
 }
 
 function swapImages() {
+    // Prevent resetView from triggering on swap
+    dom.imgLeft.onload = null;
+    dom.imgRight.onload = null;
+
     const srcLeft = dom.imgLeft.src;
     const srcRight = dom.imgRight.src;
 
